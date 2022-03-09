@@ -35,7 +35,9 @@ services:
             INFLUXDB_HTTP_ENABLED: "true"
             INFLUXDB_HTTP_AUTH_ENABLED: "true"
 
-            << : *shared-influxdb-variables
+            INFLUXDB_DB: ${INFLUXDB_DB}
+            INFLUXDB_ADMIN_USER: ${INFLUXDB_ADMIN_USER}
+            INFLUXDB_ADMIN_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
         networks:
             - monitoring
         restart: always
@@ -51,14 +53,8 @@ services:
         container_name: $GRAFANA_DOCKER_CONTAINER_NAME
         image: grafana/grafana:8.2.3
         volumes:
-            - type: volume
-              source: grafana-data
-              target: /var/lib/grafana
-
-            - type: bind
-              source: ./grafana/provisioning
-              target: /etc/grafana/provisioning
-              read_only: true
+            - grafana-data:/var/lib/grafana
+            - ./grafana/provisioning:/etc/grafana/provisioning:ro
         env_file:
             - ./.env
         environment:
@@ -76,7 +72,9 @@ services:
             GF_LOG_MODE: console
 
             # Variables for setting up the InfluxDB data source
-            << : *shared-influxdb-variables
+            INFLUXDB_DB: ${INFLUXDB_DB}
+            INFLUXDB_ADMIN_USER: ${INFLUXDB_ADMIN_USER}
+            INFLUXDB_ADMIN_PASSWORD: ${INFLUXDB_ADMIN_PASSWORD}
         networks:
             - monitoring
         restart: always
@@ -101,14 +99,9 @@ services:
         container_name: traefik
         image: traefik:v2.5.4
         volumes:
-            - type: volume
-              source: traefik-data
-              target: /letsencrypt
+            - traefik-data:/letsencrypt
 
-            - type: bind
-              source: /var/run/docker.sock
-              target: /var/run/docker.sock
-              read_only: true
+            - /var/run/docker.sock:/var/run/docker.sock:ro
         networks:
             - monitoring
         restart: always
