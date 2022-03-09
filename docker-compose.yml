@@ -12,14 +12,9 @@ services:
         container_name: $INFLUXDB_DOCKER_CONTAINER_NAME
         image: influxdb:2.1.1-alpine
         volumes:
-            - type: volume
-              source: influxdb-data
-              target: /var/lib/influxdb
+            - influxdb-data:/var/lib/influxdb
+            - ./influxdb/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro
 
-            - type: bind
-              source: ./influxdb/docker-entrypoint-initdb.d
-              target: /docker-entrypoint-initdb.d
-              read_only: true
         env_file:
             - ./.env
         environment:
@@ -100,7 +95,6 @@ services:
         image: traefik:v2.5.4
         volumes:
             - traefik-data:/letsencrypt
-
             - /var/run/docker.sock:/var/run/docker.sock:ro
         networks:
             - monitoring
