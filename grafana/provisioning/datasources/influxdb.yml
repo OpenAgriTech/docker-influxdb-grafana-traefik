@@ -8,7 +8,7 @@ datasources:
     # HTTP used here as TLS encryption is terminated on the reverse proxy (Traefik)
     url: http://$INFLUXDB_DOCKER_CONTAINER_NAME:$INFLUXDB_PORT
     secureJsonData:
-      token: $INFLUXDB_ADMIN_PASSWORD
+      token: $INFLUXDB_INIT_ADMIN_TOKEN
     jsonData:
       version: Flux
       organization: $INFLUXDB_INIT_ORG
